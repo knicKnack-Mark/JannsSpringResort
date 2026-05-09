@@ -29,10 +29,17 @@
         <span v-if="!isCollapsed">Bookings</span>
       </NuxtLink>
 
+<<<<<<< HEAD
+        <NuxtLink to="/admin/cabin" class="nav-item d-flex align-items-center gap-2">
+          <Icon name="mdi:bed" />
+          Cabins
+        </NuxtLink>
+=======
       <NuxtLink to="/admin/rooms" class="nav-link" title="Rooms">
         <Icon name="mdi:bed" />
         <span v-if="!isCollapsed">Rooms</span>
       </NuxtLink>
+>>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
 
       <NuxtLink to="/admin/inventory" class="nav-link" title="Inventory">
         <Icon name="mdi:clipboard-list" />

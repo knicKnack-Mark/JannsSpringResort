@@ -1,5 +1,5 @@
 <template>
-  <span><h4 class="mb-3 fw-bold">Rooms</h4></span>
+  <span><h4 class="mb-3 fw-bold">Cabin</h4></span>
 
   <div class="container-fluid py-4 px-4">
     <div class="row">
@@ -9,7 +9,7 @@
         <div class="card shadow-sm border-0 rounded-4 p-4">
 
           <div class="d-flex justify-content-between mb-3">
-            <h5 class="fw-bold">Rooms List</h5>
+            <h5 class="fw-bold">Cabins List</h5>
 
             <input
               v-model="search"

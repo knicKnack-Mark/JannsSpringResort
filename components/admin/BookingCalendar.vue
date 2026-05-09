@@ -2,10 +2,16 @@
   <div class="card p-3">
     <h6 class="mb-3">Booking Calendar</h6>
 
-    <!-- CABIN SELECT -->
+    <!-- DYNAMIC ROOM SELECT -->
     <select v-model="selectedCabin" class="form-select mb-3 w-auto">
-      <option value="Malobago">Malobago</option>
-      <option value="Talisay">Talisay</option>
+      <option disabled value="">Select Room</option>
+      <option 
+        v-for="room in rooms" 
+        :key="room.id" 
+        :value="room.name"
+      >
+        {{ room.name }}
+      </option>
     </select>
 
     <FullCalendar :options="calendarOptions" />
@@ -13,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -25,7 +31,29 @@ const props = defineProps({
   }
 })
 
-const selectedCabin = ref('Talisay')
+/* =========================
+   ROOMS (NEW)
+========================= */
+const rooms = ref([])
+const selectedCabin = ref('')
+
+const fetchRooms = async () => {
+  try {
+    const res = await fetch('http://localhost:8000/api/rooms')
+    const data = await res.json()
+
+    rooms.value = data
+
+    // auto select first room
+    if (data.length > 0) {
+      selectedCabin.value = data[0].name
+    }
+  } catch (err) {
+    console.error('Failed to fetch rooms:', err)
+  }
+}
+
+onMounted(fetchRooms)
 
 /* =========================
    TIME FIX
@@ -61,10 +89,10 @@ const getStatus = (b) => {
 ========================= */
 const getColor = (status) => {
   return {
-    paid: '#10b981',      // green
-    partial: '#f59e0b',   // yellow
-    reserved: '#3b82f6',  // blue
-    cancelled: '#fecaca'  // soft red
+    paid: '#10b981',
+    partial: '#f59e0b',
+    reserved: '#3b82f6',
+    cancelled: '#fecaca'
   }[status]
 }
 
@@ -74,9 +102,7 @@ const getColor = (status) => {
 const events = computed(() => {
   return (props.bookings || [])
     .filter(b =>
-      (b.cabin || '')
-        .toLowerCase()
-        .includes(selectedCabin.value.toLowerCase())
+      (b.cabin || '').toLowerCase() === selectedCabin.value.toLowerCase()
     )
     .map(b => {
       const status = getStatus(b)
@@ -116,7 +142,6 @@ const calendarOptions = computed(() => ({
 
   dayMaxEvents: true,
 
-  /* CLEAN AIRBNB UI */
   eventContent(info) {
     const b = info.event.extendedProps
 
@@ -150,9 +175,6 @@ const calendarOptions = computed(() => ({
   font-size: 13px;
 }
 
-/* =========================
-   EVENT STYLE
-========================= */
 .event-clean {
   padding: 4px 6px;
   border-radius: 6px;
@@ -161,49 +183,40 @@ const calendarOptions = computed(() => ({
   transition: 0.2s;
 }
 
-/* NAME */
 .event-name {
   font-weight: 600;
 }
 
-/* TIME */
 .event-time {
   font-size: 10px;
   opacity: 0.9;
 }
 
-/* STATUS */
 .event-status {
   font-size: 9px;
 }
 
-/* 🟢 PAID */
 .event-clean.paid {
   color: white;
 }
 
-/* 🟡 PARTIAL */
 .event-clean.partial {
   color: #1f2937;
 }
 
-/* 🔵 RESERVED */
 .event-clean.reserved {
   color: white;
 }
 
-/* 🔴 CANCELLED (SOFT UI) */
 .event-clean.cancelled {
   color: #991b1b;
   border: 1px solid #fecaca;
 }
 
-/* STRIKETHROUGH */
 .event-clean.cancelled .event-name {
   text-decoration: line-through;
 }
 
-/* HOVER */
 .fc-event:hover {
   transform: scale(1.02);
 }
