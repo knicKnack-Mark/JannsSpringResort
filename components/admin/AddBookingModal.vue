@@ -12,185 +12,318 @@
     <!-- BODY -->
     <div>
 
-      <h6 class="text-muted mb-2 fw-semibold small">Guest Information</h6>
+      <!-- GUEST INFO -->
+      <h6 class="text-muted mb-2 fw-semibold small">
+        Guest Information
+      </h6>
 
       <div class="row g-2 mb-3">
+
+        <!-- NAME -->
         <div class="col-md-6">
-          <label class="form-label">Name</label>
-          <input v-model="form.name" type="text" class="form-control form-control-sm" />
+
+          <label class="form-label">
+            Name
+          </label>
+
+          <input
+            v-model="form.name"
+            type="text"
+            class="form-control form-control-sm"
+          />
+
         </div>
 
+        <!-- ADDRESS -->
         <div class="col-md-6">
-          <label class="form-label">Address</label>
-          <input v-model="form.address" type="text" class="form-control form-control-sm" />
+
+          <label class="form-label">
+            Address
+          </label>
+
+          <input
+            v-model="form.address"
+            type="text"
+            class="form-control form-control-sm"
+          />
+
         </div>
+
       </div>
 
-<<<<<<< HEAD
-          <h6 class="text-muted mb-2 fw-semibold small">Guest Information</h6>
+      <!-- BOOKING -->
+      <h6 class="text-muted mb-2 fw-semibold small">
+        Booking Details
+      </h6>
 
-          <div class="row g-2 mb-3">
-            <div class="col-md-6">
-              <label class="form-label">Name</label>
-              <input v-model="form.name" type="text" class="form-control form-control-sm" />
-            </div>
+      <div class="row g-2 mb-3">
 
-            <div class="col-md-6">
-              <label class="form-label">Address</label>
-              <input v-model="form.address" type="text" class="form-control form-control-sm" />
-            </div>
-          </div>
+        <!-- ROOM -->
+        <div class="col-md-6">
 
-          <h6 class="text-muted mb-2 fw-semibold small">Booking Details</h6>
+          <label class="form-label">
+            Cabin
+          </label>
 
-          <div class="row g-2 mb-3">
-            <div class="col-md-6">
-              <label class="form-label">Cabin</label>
-              <select v-model="form.cabin" class="form-select form-select-sm">
-                <option 
-                  v-for="room in rooms" 
-                  :key="room.id" 
-                  :value="room.name"
-                >
-                  {{ room.name }}
-                </option>
-              </select>
-            </div>
+          <select
+            v-model="form.room_id"
+            class="form-select form-select-sm"
+          >
 
-            <div class="col-md-6">
-              <label class="form-label">Date</label>
-              <input v-model="form.date" type="date" class="form-control form-control-sm" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Time</label>
-              <select v-model="form.time" class="form-select form-select-sm">
-                <option value="8:00 AM - 5:00 PM">Day (8 AM - 5 PM)</option>
-                <option value="7:00 PM - 7:00 AM">Night (7 PM - 7 AM)</option>
-                <option value="2:00 PM - 12:00 AM">Half Day (2 PM - 12 AM)</option>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Guests</label>
-              <input v-model="form.guests" type="number" class="form-control form-control-sm" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Videoke</label>
-              <select v-model="form.videoke" class="form-select form-select-sm">
-                <option :value="true">Yes</option>
-                <option :value="false">No</option>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Paid</label>
-              <input v-model="form.paid" type="number" class="form-control form-control-sm" />
-            </div>
-          </div>
-
-          <!-- PRICE -->
-          <div class="amount-box p-2 rounded-3 small mb-2">
-
-            <div class="d-flex justify-content-between">
-              <span>Cabin</span>
-              <span>₱{{ getRoomPrice(form.cabin).toLocaleString() }}</span>
-            </div>
-
-            <div v-if="form.videoke" class="d-flex justify-content-between">
-              <span>Videoke</span>
-              <span>+ ₱500</span>
-            </div>
-
-            <div
-              v-if="form.date && (isWeekend(form.date) || isHoliday(form.date))"
-              class="d-flex justify-content-between text-warning"
+            <option
+              v-for="room in rooms"
+              :key="room.id"
+              :value="room.id"
             >
-              <span>Weekend / Holiday</span>
-              <span>+ ₱500</span>
-            </div>
+              {{ room.name }}
+              - ₱{{ Number(room.price).toLocaleString() }}
+            </option>
 
-            <hr class="my-2" />
-
-            <div class="d-flex justify-content-between fw-semibold text-success">
-              <span>Total</span>
-              <span>₱{{ totalAmount.toLocaleString() }}</span>
-            </div>
-
-          </div>
-=======
-      <h6 class="text-muted mb-2 fw-semibold small">Booking Details</h6>
->>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
-
-      <div class="row g-2 mb-3">
-        <div class="col-md-6">
-          <label class="form-label">Cabin</label>
-          <select v-model="form.cabin" class="form-select form-select-sm">
-            <option>Talisay Cabin</option>
-            <option>Malobago Cabin</option>
           </select>
+
         </div>
 
+        <!-- DATE -->
         <div class="col-md-6">
-          <label class="form-label">Date</label>
-          <input v-model="form.date" type="date" class="form-control form-control-sm" />
+
+          <label class="form-label">
+            Date
+          </label>
+
+          <input
+            v-model="form.date"
+            type="date"
+            class="form-control form-control-sm"
+          />
+
         </div>
 
+        <!-- SCHEDULE -->
         <div class="col-md-6">
-          <label class="form-label">Time</label>
-          <select v-model="form.time" class="form-select form-select-sm">
-            <option value="8:00 AM - 5:00 PM">Day (8 AM - 5 PM)</option>
-            <option value="7:00 PM - 7:00 AM">Night</option>
-            <option value="2:00 PM - 12:00 AM">Half Day</option>
+
+          <label class="form-label">
+            Schedule
+          </label>
+
+          <select
+            v-model="form.schedule_id"
+            class="form-select form-select-sm"
+          >
+
+            <option
+              v-for="schedule in schedules"
+              :key="schedule.id"
+              :value="schedule.id"
+            >
+              {{ formatTime(schedule.start_time) }}
+              -
+              {{ formatTime(schedule.end_time) }}
+            </option>
+
           </select>
+
         </div>
 
+        <!-- GUESTS -->
         <div class="col-md-6">
-          <label class="form-label">Guests</label>
-          <input v-model="form.guests" type="number" class="form-control form-control-sm" />
+
+          <label class="form-label">
+            Guests
+          </label>
+
+          <input
+            v-model="form.guests"
+            type="number"
+            class="form-control form-control-sm"
+          />
+
         </div>
 
+        <!-- MAX PAX -->
+        <div class="col-md-4">
+
+          <label class="form-label">
+            Max Pax
+          </label>
+
+          <input
+            :value="selectedRoom?.max_pax || 0"
+            type="text"
+            class="form-control form-control-sm"
+            readonly
+          />
+
+        </div>
+
+        <!-- EXTRA PAX RATE -->
+        <div class="col-md-4">
+
+          <label class="form-label">
+            Extra Pax Rate
+          </label>
+
+          <input
+            v-model="form.extra_pax_rate"
+            type="number"
+            class="form-control form-control-sm"
+          />
+
+        </div>
+
+        <!-- DISCOUNT -->
+        <div class="col-md-4">
+
+          <label class="form-label">
+            Discount
+          </label>
+
+          <input
+            v-model="form.extra_pax_discount"
+            type="number"
+            class="form-control form-control-sm"
+          />
+
+        </div>
+
+        <!-- VIDEOKE -->
         <div class="col-md-6">
-          <label class="form-label">Videoke</label>
-          <select v-model="form.videoke" class="form-select form-select-sm">
-            <option :value="true">Yes</option>
-            <option :value="false">No</option>
+
+          <label class="form-label">
+            Videoke
+          </label>
+
+          <select
+            v-model="form.videoke"
+            class="form-select form-select-sm"
+          >
+
+            <option :value="true">
+              Yes
+            </option>
+
+            <option :value="false">
+              No
+            </option>
+
           </select>
+
         </div>
 
+        <!-- PAID -->
         <div class="col-md-6">
-          <label class="form-label">Paid</label>
-          <input v-model="form.paid" type="number" class="form-control form-control-sm" />
+
+          <label class="form-label">
+            Paid
+          </label>
+
+          <input
+            v-model="form.paid"
+            type="number"
+            class="form-control form-control-sm"
+          />
+
         </div>
+
       </div>
 
-      <!-- PRICE -->
+      <!-- AMOUNT -->
       <div class="amount-box p-2 rounded-3 small mb-2">
 
+        <!-- ROOM -->
         <div class="d-flex justify-content-between">
-          <span>Cabin</span>
-          <span>₱{{ form.cabin === "Talisay Cabin" ? "4,500" : "4,000" }}</span>
+
+          <span>
+            Cabin
+          </span>
+
+          <span>
+            ₱{{
+              selectedRoom
+                ? Number(selectedRoom.price).toLocaleString()
+                : 0
+            }}
+          </span>
+
         </div>
 
-        <div v-if="form.videoke" class="d-flex justify-content-between">
-          <span>Videoke</span>
-          <span>+ ₱500</span>
+        <!-- VIDEOKE -->
+        <div
+          v-if="form.videoke"
+          class="d-flex justify-content-between"
+        >
+
+          <span>
+            Videoke
+          </span>
+
+          <span>
+            + ₱500
+          </span>
+
         </div>
 
+        <!-- WEEKEND -->
         <div
           v-if="form.date && (isWeekend(form.date) || isHoliday(form.date))"
           class="d-flex justify-content-between text-warning"
         >
-          <span>Weekend / Holiday</span>
-          <span>+ ₱500</span>
+
+          <span>
+            Weekend / Holiday
+          </span>
+
+          <span>
+            + ₱500
+          </span>
+
+        </div>
+
+        <!-- EXTRA PAX -->
+        <div
+          v-if="extraPax > 0"
+          class="d-flex justify-content-between text-danger"
+        >
+
+          <span>
+            Extra Pax
+            ({{ extraPax }} × ₱{{ form.extra_pax_rate }})
+          </span>
+
+          <span>
+            + ₱{{ extraPaxTotal.toLocaleString() }}
+          </span>
+
+        </div>
+
+        <!-- DISCOUNT -->
+        <div
+          v-if="form.extra_pax_discount > 0"
+          class="d-flex justify-content-between text-success"
+        >
+
+          <span>
+            Discount
+          </span>
+
+          <span>
+            - ₱{{ Number(form.extra_pax_discount).toLocaleString() }}
+          </span>
+
         </div>
 
         <hr class="my-2" />
 
+        <!-- TOTAL -->
         <div class="d-flex justify-content-between fw-semibold text-success">
-          <span>Total</span>
-          <span>₱{{ totalAmount.toLocaleString() }}</span>
+
+          <span>
+            Total
+          </span>
+
+          <span>
+            ₱{{ totalAmount.toLocaleString() }}
+          </span>
+
         </div>
 
       </div>
@@ -199,7 +332,11 @@
 
     <!-- FOOTER -->
     <template #footer>
-      <button class="btn btn-light btn-sm px-3" @click="closeModal">
+
+      <button
+        class="btn btn-light btn-sm px-3"
+        @click="closeModal"
+      >
         Cancel
       </button>
 
@@ -208,261 +345,426 @@
         :disabled="loading"
         @click="submit"
       >
-        <span v-if="loading" class="spinner-border spinner-border-sm"></span>
+
+        <span
+          v-if="loading"
+          class="spinner-border spinner-border-sm"
+        ></span>
+
         <Icon name="mdi:content-save" />
+
         Save
+
       </button>
+
     </template>
 
   </BaseModal>
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
-import BaseModal from "@/components/ui/BaseModal.vue";
-import { useModal } from "@/composables/useModal";
+import {
+  ref,
+  computed,
+  watch,
+  onMounted
+} from 'vue'
 
-const props = defineProps({ editData: Object });
-const emit = defineEmits(["save"]);
+import axios from 'axios'
 
-<<<<<<< HEAD
-/* =========================
-   ROOMS (NEW)
-========================= */
-const rooms = ref([]);
+import BaseModal from '@/components/ui/BaseModal.vue'
+import { useModal } from '@/composables/useModal'
 
-const fetchRooms = async () => {
-  try {
-    const res = await fetch("http://localhost:8000/api/rooms");
-    const data = await res.json();
+const props = defineProps({
+  editData: Object
+})
 
-    rooms.value = data;
+const emit = defineEmits([
+  'save'
+])
 
-    if (data.length > 0) {
-      form.value.cabin = data[0].name;
-    }
-  } catch (err) {
-    console.error("Failed to fetch rooms:", err);
-  }
-};
+const { close } = useModal()
 
-onMounted(fetchRooms);
+const loading = ref(false)
 
-/* =========================
-   FORM
-========================= */
-=======
-const { close } = useModal();
-const loading = ref(false);
+const config = useRuntimeConfig()
+
+/* ROOMS */
+const rooms = ref([])
+
+/* SCHEDULES */
+const schedules = ref([])
 
 /* FORM */
->>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
 const form = ref({
-  name: "",
-  address: "",
-  cabin: "",
-  date: "",
-  time: "8:00 AM - 5:00 PM",
+  name: '',
+  address: '',
+  cabin: '',
+  room_id: null,
+  schedule_id: null,
+  date: '',
   guests: 1,
-  videoke: false,
-  paid: 0,
-});
 
-<<<<<<< HEAD
-/* =========================
-   EDIT MODE
-========================= */
+  // EXTRA PAX
+  extra_pax_rate: 100,
+  extra_pax_discount: 0,
+
+  videoke: false,
+  paid: 0
+})
+
+/* FETCH ROOMS */
+const fetchRooms = async () => {
+
+  try {
+
+    const API = config.public.apiBase
+
+    const res = await axios.get(`${API}/rooms`)
+
+    rooms.value = res.data
+
+    if (rooms.value.length > 0) {
+
+      form.value.room_id = rooms.value[0].id
+      form.value.cabin = rooms.value[0].name
+    }
+
+  } catch (err) {
+
+    console.error('Failed to fetch rooms:', err)
+  }
+}
+
+/* FETCH SCHEDULES */
+const fetchSchedules = async () => {
+
+  try {
+
+    const API = config.public.apiBase
+
+    const res = await axios.get(`${API}/schedules`)
+
+    schedules.value = res.data.data
+
+    if (schedules.value.length > 0) {
+
+      form.value.schedule_id = schedules.value[0].id
+    }
+
+  } catch (err) {
+
+    console.error('Failed to fetch schedules:', err)
+  }
+}
+
+onMounted(() => {
+
+  fetchRooms()
+  fetchSchedules()
+})
+
+/* ROOM CHANGE */
+watch(
+  () => form.value.room_id,
+  (id) => {
+
+    const room = rooms.value.find(
+      r => r.id === id
+    )
+
+    if (room) {
+      form.value.cabin = room.name
+    }
+  }
+)
+
+/* EDIT MODE */
 watch(
   () => props.editData,
   (val) => {
-    if (val) {
-      const start = parseLocal(val.start_datetime);
 
-      form.value = {
-        ...form.value,
-        name: val.name,
-        address: val.address,
-        cabin: val.cabin,
-        guests: val.guests,
-        videoke: val.videoke,
-        date: start.toISOString().split("T")[0],
-        time: detectTimeRange(val.start_datetime, val.end_datetime),
-      };
+    if (!val) return
+
+    const start = new Date(val.start_datetime)
+
+    form.value = {
+      ...form.value,
+
+      name: val.name,
+      address: val.address,
+
+      cabin: val.cabin,
+
+      room_id: val.room_id,
+
+      schedule_id: val.schedule_id,
+
+      guests: val.guests,
+
+      extra_pax_rate:
+        val.extra_pax_rate || 100,
+
+      extra_pax_discount:
+        val.extra_pax_discount || 0,
+
+      videoke: val.videoke,
+
+      paid: val.paid || 0,
+
+      date: start.toISOString().split('T')[0]
     }
   },
   { immediate: true }
-);
+)
 
-const parseLocal = (dt) => {
-  if (!dt) return null;
-  return new Date(dt.replace("T", " ").replace("Z", "").split(".")[0]);
-};
-
-/* =========================
-   TIME
-========================= */
-const formatForBackend = (date) => {
-  const pad = (n) => String(n).padStart(2, "0");
-
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-         `${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
-};
-
-const generateDateTime = () => {
-  const base = new Date(form.value.date);
-
-  let start, end;
-
-  if (form.value.time === "8:00 AM - 5:00 PM") {
-    start = new Date(base);
-    start.setHours(8, 0, 0);
-
-    end = new Date(base);
-    end.setHours(17, 0, 0);
-  } else if (form.value.time === "7:00 PM - 7:00 AM") {
-    start = new Date(base);
-    start.setHours(19, 0, 0);
-
-    end = new Date(base);
-    end.setHours(7, 0, 0);
-    end.setDate(end.getDate() + 1);
-  } else {
-    start = new Date(base);
-    start.setHours(14, 0, 0);
-
-    end = new Date(base);
-    end.setHours(0, 0, 0);
-    end.setDate(end.getDate() + 1);
-  }
-
-  return {
-    start_datetime: formatForBackend(start),
-    end_datetime: formatForBackend(end),
-=======
-/* EDIT MODE */
-watch(() => props.editData, (val) => {
-  if (!val) return;
-
-  const start = new Date(val.start_datetime);
-
-  form.value = {
-    ...form.value,
-    name: val.name,
-    address: val.address,
-    cabin: val.cabin,
-    guests: val.guests,
-    videoke: val.videoke,
-    date: start.toISOString().split("T")[0],
-    time: "8:00 AM - 5:00 PM"
->>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
-  };
-});
-
-<<<<<<< HEAD
-const detectTimeRange = (start, end) => {
-  const s = parseLocal(start);
-  const e = parseLocal(end);
-
-  if (s.getHours() === 8 && e.getHours() === 17) return "8:00 AM - 5:00 PM";
-  if (s.getHours() === 19 && e.getHours() === 7) return "7:00 PM - 7:00 AM";
-  if (s.getHours() === 14 && e.getHours() === 0) return "2:00 PM - 12:00 AM";
-
-  return "8:00 AM - 5:00 PM";
-};
-
-/* =========================
-   PRICE
-========================= */
-const getRoomPrice = (name) => {
-  const room = rooms.value.find(r => r.name === name);
-  return room ? Number(room.price) : 0;
-};
-
-=======
-/* PRICE */
->>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
+/* WEEKEND */
 const isWeekend = (date) => {
-  const d = new Date(date);
-  return d.getDay() === 0 || d.getDay() === 6;
-};
 
-const holidays = ["2026-01-01","2026-04-09","2026-06-12","2026-12-25"];
-const isHoliday = (date) => holidays.includes(date);
+  const d = new Date(date)
 
+  return (
+    d.getDay() === 0 ||
+    d.getDay() === 6
+  )
+}
+
+/* HOLIDAYS */
+const holidays = [
+  '2026-01-01',
+  '2026-04-09',
+  '2026-06-12',
+  '2026-12-25'
+]
+
+const isHoliday = (date) => {
+  return holidays.includes(date)
+}
+
+/* SELECTED ROOM */
+const selectedRoom = computed(() => {
+
+  return rooms.value.find(
+    r => r.id === form.value.room_id
+  )
+})
+
+/* SELECTED SCHEDULE */
+const selectedSchedule = computed(() => {
+
+  return schedules.value.find(
+    s => s.id === form.value.schedule_id
+  )
+})
+
+/* EXTRA PAX */
+const extraPax = computed(() => {
+
+  return Math.max(
+    0,
+    Number(form.value.guests)
+    - Number(selectedRoom.value?.max_pax || 0)
+  )
+})
+
+/* EXTRA PAX TOTAL */
+const extraPaxTotal = computed(() => {
+
+  const subtotal =
+    extraPax.value *
+    Number(form.value.extra_pax_rate)
+
+  return Math.max(
+    0,
+    subtotal
+    - Number(form.value.extra_pax_discount)
+  )
+})
+
+/* FORMAT TIME */
+const formatTime = (time) => {
+
+  if (!time) return ''
+
+  const parts = time.split(':')
+
+  let hour = Number(parts[0])
+
+  const minute = parts[1]
+
+  const ampm = hour >= 12
+    ? 'PM'
+    : 'AM'
+
+  hour = hour % 12 || 12
+
+  return `${hour}:${minute} ${ampm}`
+}
+
+/* TOTAL */
 const totalAmount = computed(() => {
-  let base = getRoomPrice(form.value.cabin);
 
-  if (form.value.videoke) base += 500;
-  if (form.value.date && (isWeekend(form.value.date) || isHoliday(form.value.date))) {
-    base += 500;
+  let total = selectedRoom.value
+    ? Number(selectedRoom.value.price)
+    : 0
+
+  // VIDEOKE
+  if (form.value.videoke) {
+    total += 500
   }
 
-  return base;
-});
+  // WEEKEND / HOLIDAY
+  if (
+    form.value.date &&
+    (
+      isWeekend(form.value.date) ||
+      isHoliday(form.value.date)
+    )
+  ) {
+    total += 500
+  }
 
-<<<<<<< HEAD
-/* =========================
-   SUBMIT
-========================= */
-const submit = () => {
-=======
+  // EXTRA PAX
+  total += extraPaxTotal.value
+
+  return total
+})
+
 /* GENERATE DATETIME */
 const generateDateTime = () => {
-  const base = new Date(form.value.date);
-  let start = new Date(base);
-  let end = new Date(base);
 
-  if (form.value.time.includes("8:00")) {
-    start.setHours(8); end.setHours(17);
-  } else if (form.value.time.includes("7:00 PM")) {
-    start.setHours(19); end.setHours(7); end.setDate(end.getDate() + 1);
-  } else {
-    start.setHours(14); end.setHours(0); end.setDate(end.getDate() + 1);
+  if (!form.value.date) {
+
+    return {
+      start_datetime: null,
+      end_datetime: null
+    }
+  }
+
+  const [
+    year,
+    month,
+    day
+  ] = form.value.date
+    .split('-')
+    .map(Number)
+
+  const start = new Date(
+    year,
+    month - 1,
+    day
+  )
+
+  const end = new Date(
+    year,
+    month - 1,
+    day
+  )
+
+  if (!selectedSchedule.value) {
+
+    return {
+      start_datetime: start,
+      end_datetime: end
+    }
+  }
+
+  const [
+    startHour,
+    startMinute
+  ] =
+    selectedSchedule.value
+      .start_time
+      .split(':')
+      .map(Number)
+
+  start.setHours(
+    startHour,
+    startMinute,
+    0,
+    0
+  )
+
+  const [
+    endHour,
+    endMinute
+  ] =
+    selectedSchedule.value
+      .end_time
+      .split(':')
+      .map(Number)
+
+  end.setHours(
+    endHour,
+    endMinute,
+    0,
+    0
+  )
+
+  // OVERNIGHT
+  if (end <= start) {
+
+    end.setDate(
+      end.getDate() + 1
+    )
   }
 
   return {
     start_datetime: start,
     end_datetime: end
-  };
-};
+  }
+}
 
 /* SUBMIT */
 const submit = async () => {
-  loading.value = true;
 
->>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
-  const { start_datetime, end_datetime } = generateDateTime();
+  loading.value = true
 
-  await emit("save", {
-    ...form.value,
-    amount: totalAmount.value,
-    start_datetime,
-    end_datetime
-  });
-<<<<<<< HEAD
-=======
+  try {
 
-  loading.value = false;
+    const {
+      start_datetime,
+      end_datetime
+    } = generateDateTime()
 
-  close("addBookingModal");
->>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
-};
+    await emit('save', {
 
-<<<<<<< HEAD
+      ...form.value,
+
+      max_pax:
+        selectedRoom.value?.max_pax || 0,
+
+      base_amount:
+        selectedRoom.value
+          ? Number(selectedRoom.value.price)
+          : 0,
+
+      start_datetime,
+
+      end_datetime
+    })
+
+    close('addBookingModal')
+
+  } catch (err) {
+
+    console.error(err)
+
+  } finally {
+
+    loading.value = false
+  }
+}
+
+/* CLOSE */
+const closeModal = () => {
+  close('addBookingModal')
+}
+</script>
+
 <style scoped>
-.modal-fit { max-width: 650px; }
-.modal-content { font-size: 14px; max-height: 90vh; display: flex; flex-direction: column; }
-.modal-body { overflow-y: auto; max-height: calc(90vh - 120px); }
-.form-label { font-size: 12.5px; margin-bottom: 3px; }
-.amount-box { background: #f8fafc; border: 1px dashed #ddd; }
-.form-control, .form-select { border-radius: 8px; }
-.form-control:focus, .form-select:focus {
-  border-color: #ff6b2c;
-  box-shadow: 0 0 0 0.1rem rgba(255, 107, 44, 0.2);
+.amount-box {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
 }
 </style>
-=======
-/* CLOSE */
-const closeModal = () => close("addBookingModal");
-</script>
->>>>>>> fffd9687b6f06c74d330effa86dfa094d4e39ac3
