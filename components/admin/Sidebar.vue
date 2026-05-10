@@ -5,9 +5,14 @@
   >
     <!-- HEADER -->
     <div class="d-flex align-items-center justify-content-between mb-4">
-      <h5 v-if="!isCollapsed" class="fw-bold text-orange mb-0">Admin</h5>
+      <h5 v-if="!isCollapsed" class="fw-bold text-orange mb-0">
+        Janns Spring Resort
+      </h5>
 
-      <button class="btn btn-sm btn-light toggle-btn" @click="toggleSidebar">
+      <button
+        class="btn btn-sm btn-light toggle-btn"
+        @click="toggleSidebar"
+      >
         <Icon
           :name="isCollapsed ? 'mdi:menu-open' : 'mdi:menu'"
           size="20"
@@ -18,47 +23,80 @@
 
     <!-- NAV -->
     <ul class="nav nav-pills flex-column gap-2">
+      <li v-for="item in menuItems" :key="item.to">
+        <NuxtLink
+          :to="item.to"
+          class="nav-link"
+          :title="item.label"
+        >
+          <Icon :name="item.icon" />
 
-      <NuxtLink to="/admin" class="nav-link" title="Dashboard">
-        <Icon name="mdi:view-dashboard" />
-        <span v-if="!isCollapsed">Dashboard</span>
-      </NuxtLink>
-
-      <NuxtLink to="/admin/bookings" class="nav-link" title="Bookings">
-        <Icon name="mdi:calendar-check" />
-        <span v-if="!isCollapsed">Bookings</span>
-      </NuxtLink>
-
-      <NuxtLink to="/admin/cabin" class="nav-link" title="Rooms">
-        <Icon name="mdi:bed" />
-        <span v-if="!isCollapsed">Cabins</span>
-      </NuxtLink>
-
-      <NuxtLink to="/admin/inventory" class="nav-link" title="Inventory">
-        <Icon name="mdi:clipboard-list" />
-        <span v-if="!isCollapsed">Inventory</span>
-      </NuxtLink>
-
-      <NuxtLink to="/admin/today" class="nav-link" title="Today">
-        <Icon name="mdi:clock-outline" />
-        <span v-if="!isCollapsed">Today</span>
-      </NuxtLink>
-
-      <NuxtLink to="/admin/availability" class="nav-link" title="Availability">
-        <Icon name="mdi:calendar-month" />
-        <span v-if="!isCollapsed">Availability</span>
-      </NuxtLink>
-
+          <span v-if="!isCollapsed">
+            {{ item.label }}
+          </span>
+        </NuxtLink>
+      </li>
     </ul>
   </aside>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useSidebar } from "@/composables/useSidebar";
 
+const router = useRouter();
 const { isCollapsed } = useSidebar();
 
+/* AUTO GENERATED MENU */
+const menuItems = computed(() => {
+  return router.options.routes
+    .filter((route) => {
+      return (
+        route.path.startsWith("/admin") &&
+        !route.path.includes(":") &&
+        route.path !== "/admin/login"
+      );
+    })
+    .map((route) => {
+      const lastSegment =
+        route.path === "/admin"
+          ? "dashboard"
+          : route.path.split("/").pop();
+
+      return {
+        label: formatLabel(lastSegment),
+        to: route.path,
+        icon: getIcon(lastSegment),
+      };
+    });
+});
+
+/* FORMAT LABEL */
+const formatLabel = (text) => {
+  return text
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
+/* ICON MAPPING */
+const getIcon = (name) => {
+  const icons = {
+    dashboard: "mdi:view-dashboard",
+    bookings: "mdi:calendar-check",
+    cabin: "mdi:bed",
+    inventory: "mdi:clipboard-list",
+    today: "mdi:clock-outline",
+    availability: "mdi:calendar-month",
+    reports: "mdi:file-chart",
+    users: "mdi:account-group",
+    settings: "mdi:cog",
+  };
+
+  return icons[name] || "mdi:circle-outline";
+};
+
+/* TOGGLE SIDEBAR */
 const toggleSidebar = () => {
   isCollapsed.value = !isCollapsed.value;
 
@@ -68,8 +106,10 @@ const toggleSidebar = () => {
   );
 };
 
+/* LOAD SAVED STATE */
 onMounted(() => {
   const saved = localStorage.getItem("sidebar");
+
   isCollapsed.value = saved === "collapsed";
 });
 </script>
@@ -158,7 +198,7 @@ onMounted(() => {
   display: none;
 }
 
-/* ACTIVE (CIRCLE STYLE) */
+/* ACTIVE STYLE */
 .sidebar.collapsed .router-link-active {
   background: #ff6b2c;
   color: #fff !important;
