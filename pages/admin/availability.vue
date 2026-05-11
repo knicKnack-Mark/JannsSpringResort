@@ -925,7 +925,7 @@ const summaryCards =
 }
 
 .night-dot {
-  background: #8b5cf6;
+  background: #ee7d32;
 }
 
 .whole-dot {
@@ -998,9 +998,9 @@ const summaryCards =
 
 /* NIGHT */
 .calendar-day.night {
-  background: #ede9fe;
-  color: #7c3aed;
-  border-color: #ddd6fe;
+  background: #fde6d8;
+  color: #9d3f0e;
+  border-color: #f5c3a3;
 }
 
 /* WHOLE */
