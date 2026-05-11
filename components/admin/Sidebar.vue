@@ -91,6 +91,9 @@ const getIcon = (name) => {
     reports: "mdi:file-chart",
     users: "mdi:account-group",
     settings: "mdi:cog",
+
+    // ADD THIS
+    staff: "mdi:badge-account-horizontal",
   };
 
   return icons[name] || "mdi:circle-outline";
