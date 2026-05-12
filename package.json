@@ -27,6 +27,8 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.5.1",
     "dayjs-nuxt": "^2.1.11",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "nuxt": "^3.15.4",
     "vue": "latest",
     "vue-chartjs": "^5.3.3",
