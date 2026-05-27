@@ -1,34 +1,55 @@
+// composables/useApi.js
+import axios from 'axios'
+
 export const useApi = () => {
   const config = useRuntimeConfig()
   const token = useCookie('token')
+  const user = useCookie('user')
 
-  const apiFetch = async (url, options = {}) => {
-    try {
-      return await $fetch(`${config.public.apiBase}${url}`, {
-        ...options,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
-          ...(options.headers || {})
-        }
-      })
-    } catch (err) {
+  const api = axios.create({
+    baseURL: config.public.apiBase,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
 
-      // ✅ ONLY auto-logout if NOT login request
-      if (err?.status === 401 && url !== '/login') {
+  api.interceptors.request.use((request) => {
+    if (token.value) {
+      request.headers.Authorization = `Bearer ${token.value}`
+    }
+
+    return request
+  })
+
+  api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const status = error?.response?.status
+      const url = error?.config?.url
+
+      if (status === 401 && url !== '/login') {
         token.value = null
-        useCookie('user').value = null
+        user.value = null
 
-        return navigateTo('/admin/login')
+        await navigateTo('/admin/login')
       }
 
-      // ✅ Let login page handle error
-      throw err
+      return Promise.reject(error)
     }
+  )
+
+  const apiFetch = async (url, options = {}) => {
+    const response = await api({
+      url,
+      ...options
+    })
+
+    return response.data
   }
 
   return {
+    api,
     apiFetch
   }
 }
