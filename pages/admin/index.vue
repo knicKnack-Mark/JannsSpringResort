@@ -15,12 +15,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-definePageMeta({ layout: 'admin' })
-
 import AdminStatsCards from '~/components/admin/StatsCards.vue'
 import AdminRevenueChart from '~/components/admin/RevenueChart.vue'
 
-const { $api } = useNuxtApp()
+definePageMeta({
+  layout: 'admin'
+})
+
+const { apiFetch } = useApi()
 
 /* =========================
    STATE
@@ -32,14 +34,14 @@ const bookings = ref([])
 ========================= */
 const fetchBookings = async () => {
   try {
-    const res = await $api('/bookings', {
+    const res = await apiFetch('/bookings', {
+      method: 'GET',
       params: {
-        per_page: 1000 // get all
+        per_page: 1000
       }
     })
 
-    bookings.value = res.data
-
+    bookings.value = res?.data || []
   } catch (err) {
     console.error(err)
   }
@@ -52,7 +54,12 @@ onMounted(fetchBookings)
 ========================= */
 const parseLocal = (dt) => {
   if (!dt) return null
-  const clean = dt.replace("T", " ").replace("Z", "").split(".")[0]
+
+  const clean = dt
+    .replace('T', ' ')
+    .replace('Z', '')
+    .split('.')[0]
+
   return new Date(clean)
 }
 
@@ -71,13 +78,13 @@ const currentMonth = '2026-04'
 const grouped = computed(() => {
   const map = {}
 
-  bookings.value.forEach(b => {
+  bookings.value.forEach((b) => {
     const start = parseLocal(b.start_datetime)
     const end = parseLocal(b.end_datetime)
 
     if (!start || !end) return
 
-    let current = new Date(start)
+    const current = new Date(start)
 
     while (current <= end) {
       const dateStr = formatDate(current)
@@ -99,19 +106,19 @@ const grouped = computed(() => {
 })
 
 /* =========================
-   FULLY BOOKED (2+ bookings)
+   FULLY BOOKED
 ========================= */
 const bookedDays = computed(() => {
-  return Object.values(grouped.value).filter(dayBookings =>
+  return Object.values(grouped.value).filter((dayBookings) =>
     dayBookings.length >= 2
   ).length
 })
 
 /* =========================
-   PARTIAL (1 booking)
+   PARTIAL
 ========================= */
 const partialDays = computed(() => {
-  return Object.values(grouped.value).filter(dayBookings =>
+  return Object.values(grouped.value).filter((dayBookings) =>
     dayBookings.length === 1
   ).length
 })
@@ -121,6 +128,7 @@ const partialDays = computed(() => {
 ========================= */
 const availableDays = computed(() => {
   const totalDays = new Date(2026, 4, 0).getDate()
+
   return totalDays - bookedDays.value - partialDays.value
 })
 </script>

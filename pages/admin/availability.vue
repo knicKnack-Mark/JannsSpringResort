@@ -2,31 +2,19 @@
   <div class="container-fluid py-4">
 
     <!-- HEADER -->
-    <div
-      class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4"
-    >
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
       <div>
-        <h3 class="fw-bold mb-1">
-          Availability
-        </h3>
-
-        <p class="text-muted mb-0">
-          Cabin occupancy calendar by schedule
-        </p>
+        <h3 class="fw-bold mb-1">Availability</h3>
+        <p class="text-muted mb-0">Cabin occupancy calendar by schedule</p>
       </div>
 
-      <!-- FILTERS -->
       <div class="d-flex flex-wrap gap-2">
-
-        <!-- CABIN -->
         <select
           v-model="selectedCabin"
           class="form-select rounded-4 shadow-sm border-0"
           style="width: 220px"
         >
-          <option value="">
-            All Cabins
-          </option>
+          <option value="">All Cabins</option>
 
           <option
             v-for="cabin in uniqueCabins"
@@ -37,7 +25,6 @@
           </option>
         </select>
 
-        <!-- MONTH -->
         <select
           v-model="selectedMonth"
           class="form-select rounded-4 shadow-sm border-0"
@@ -51,116 +38,88 @@
             {{ m.label }}
           </option>
         </select>
-
       </div>
     </div>
 
     <!-- SUMMARY -->
     <div class="row g-3 mb-4">
-
       <div
         v-for="card in summaryCards"
         :key="card.label"
         class="col-6 col-lg-3"
       >
-        <div
-          class="bg-white rounded-4 shadow-sm border p-3 h-100"
-        >
-          <small class="text-muted d-block mb-2">
-            {{ card.label }}
-          </small>
+        <div class="bg-white rounded-4 shadow-sm border p-3 h-100">
+          <small class="text-muted d-block mb-2">{{ card.label }}</small>
 
-          <h3
-            class="fw-bold mb-0"
-            :class="card.class"
-          >
+          <h3 class="fw-bold mb-0" :class="card.class">
             {{ card.value }}
           </h3>
         </div>
       </div>
-
     </div>
 
     <!-- LEGEND -->
     <div class="d-flex flex-wrap gap-4 align-items-center mb-4">
-
       <div class="d-flex align-items-center gap-2">
         <span class="legend-dot available-dot"></span>
-        <small class="text-muted">
-          Available
-        </small>
+        <small class="text-muted">Available</small>
       </div>
 
       <div class="d-flex align-items-center gap-2">
         <span class="legend-dot day-dot"></span>
-        <small class="text-muted">
-          Day (9AM-5PM)
-        </small>
+        <small class="text-muted">Day (9AM-5PM)</small>
       </div>
 
       <div class="d-flex align-items-center gap-2">
         <span class="legend-dot night-dot"></span>
-        <small class="text-muted">
-          Night (7PM-7AM)
-        </small>
+        <small class="text-muted">Night (7PM-7AM)</small>
       </div>
 
       <div class="d-flex align-items-center gap-2">
         <span class="legend-dot whole-dot"></span>
-        <small class="text-muted">
-          Fully Occupied
-        </small>
+        <small class="text-muted">Fully Occupied</small>
       </div>
+    </div>
 
+    <!-- LOADING -->
+    <div v-if="loading" class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+      <p class="text-muted mt-3 mb-0">Loading availability...</p>
+    </div>
+
+    <!-- EMPTY -->
+    <div
+      v-else-if="!filteredCabins.length"
+      class="bg-white rounded-4 shadow-sm border p-5 text-center"
+    >
+      <h5 class="fw-bold mb-2">No cabins found</h5>
+      <p class="text-muted mb-0">No booking or cabin data available yet.</p>
     </div>
 
     <!-- CABINS -->
-    <div class="row g-4">
-
+    <div v-else class="row g-4">
       <div
         v-for="cabin in filteredCabins"
         :key="cabin"
         class="col-12 col-xxl-6"
       >
         <div class="card border-0 shadow-sm rounded-4 h-100">
-
-          <!-- HEADER -->
-          <div
-            class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center"
-          >
+          <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
             <div>
-              <h4 class="fw-bold mb-1">
-                {{ cabin }}
-              </h4>
-
-              <small class="text-muted">
-                {{ monthLabel }}
-              </small>
+              <h4 class="fw-bold mb-1">{{ cabin }}</h4>
+              <small class="text-muted">{{ monthLabel }}</small>
             </div>
 
             <span
               class="badge rounded-pill px-3 py-2"
-              :class="
-                isOccupiedToday(cabin)
-                  ? 'text-bg-danger'
-                  : 'text-bg-success'
-              "
+              :class="isOccupiedToday(cabin) ? 'text-bg-danger' : 'text-bg-success'"
             >
-              {{
-                isOccupiedToday(cabin)
-                  ? "Occupied"
-                  : "Available"
-              }}
+              {{ isOccupiedToday(cabin) ? 'Occupied' : 'Available' }}
             </span>
           </div>
 
-          <!-- BODY -->
           <div class="card-body p-4">
-
-            <!-- WEEK -->
             <div class="calendar-grid">
-
-              <!-- WEEK DAYS -->
               <div
                 v-for="day in weekDays"
                 :key="day"
@@ -169,10 +128,9 @@
                 {{ day }}
               </div>
 
-              <!-- DATES -->
               <div
-                v-for="date in calendarDates"
-                :key="date.full || Math.random()"
+                v-for="(date, index) in calendarDates"
+                :key="date.full || `empty-${index}`"
                 class="calendar-day"
                 :class="getDateClass(cabin, date)"
                 @click="openSchedules(cabin, date)"
@@ -181,117 +139,89 @@
                   {{ date.number }}
                 </template>
               </div>
-
             </div>
-
           </div>
-
         </div>
       </div>
-
     </div>
 
     <!-- MODAL -->
     <div
       v-if="showModal"
+      ref="modalBackdrop"
       class="schedule-modal-backdrop"
-      @click.self="showModal = false"
+      tabindex="0"
+      @click.self="closeModal"
+      @keydown.esc="closeModal"
     >
       <div class="schedule-modal">
-
-        <div
-          class="d-flex justify-content-between align-items-start mb-4"
+        <button
+          type="button"
+          class="modal-close-btn"
+          aria-label="Close modal"
+          @click="closeModal"
         >
+          <Icon name="solar:close-circle-bold-duotone" size="28" />
+        </button>
+
+        <div class="d-flex justify-content-between align-items-start mb-4 pe-5">
           <div>
-            <h3 class="fw-bold mb-2">
-              {{ modalCabin }}
-            </h3>
-
-            <p class="text-muted mb-0">
-              {{ modalDate }}
-            </p>
+            <h3 class="fw-bold mb-2">{{ modalCabin }}</h3>
+            <p class="text-muted mb-0">{{ modalDate }}</p>
           </div>
-
-          <button
-            class="btn-close"
-            @click="showModal = false"
-          ></button>
         </div>
 
         <div class="d-flex flex-column gap-3">
+          <div
+            v-for="sched in modalSchedules"
+            :key="sched.label"
+            class="schedule-item"
+          >
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <h5 class="fw-bold mb-0">{{ sched.label }}</h5>
 
-<div
-  v-for="sched in modalSchedules"
-  :key="sched.label"
-  class="schedule-item"
->
-  <div>
+                <span
+                  class="badge rounded-pill"
+                  :class="{
+                    'bg-primary-subtle text-primary': sched.type === 'day',
+                    'bg-purple text-white': sched.type === 'night',
+                    'bg-danger-subtle text-danger': sched.type === 'whole'
+                  }"
+                >
+                  {{
+                    sched.type === 'day'
+                      ? 'Day Tour'
+                      : sched.type === 'night'
+                        ? 'Overnight'
+                        : 'Whole Day'
+                  }}
+                </span>
+              </div>
 
-    <!-- TITLE -->
-    <div class="d-flex align-items-center gap-2 mb-2">
+              <small class="text-muted d-block">
+                {{
+                  sched.type === 'day'
+                    ? 'Same day booking only'
+                    : sched.type === 'night'
+                      ? 'Night stay until next morning'
+                      : 'Occupies day and overnight schedule'
+                }}
+              </small>
 
-      <h5 class="fw-bold mb-0">
-        {{ sched.label }}
-      </h5>
+              <small class="text-secondary">
+                {{ sched.label }}
+              </small>
+            </div>
 
-      <span
-        class="badge rounded-pill"
-        :class="{
-          'bg-primary-subtle text-primary': sched.type === 'day',
-          'bg-purple text-white': sched.type === 'night',
-          'bg-danger-subtle text-danger': sched.type === 'whole'
-        }"
-      >
-        {{
-          sched.type === 'day'
-            ? 'Day Tour'
-            : sched.type === 'night'
-              ? 'Overnight'
-              : 'Whole Day'
-        }}
-      </span>
-
-    </div>
-
-    <!-- DESCRIPTION -->
-    <small class="text-muted d-block">
-
-      {{
-        sched.type === 'day'
-          ? 'Same day booking only'
-          : sched.type === 'night'
-            ? 'Night stay until next morning'
-            : 'Occupies day and overnight schedule'
-      }}
-
-    </small>
-
-    <!-- TIME -->
-    <small class="text-secondary">
-      {{ sched.label }}
-    </small>
-
-  </div>
-
-  <!-- STATUS -->
-  <span
-    class="badge rounded-pill px-3 py-2"
-    :class="
-      sched.occupied
-        ? 'text-bg-danger'
-        : 'text-bg-success'
-    "
-  >
-    {{
-      sched.occupied
-        ? 'Occupied'
-        : 'Available'
-    }}
-  </span>
-</div>
-
+            <span
+              class="badge rounded-pill px-3 py-2"
+              :class="sched.occupied ? 'text-bg-danger' : 'text-bg-success'"
+            >
+              {{ sched.occupied ? 'Occupied' : 'Available' }}
+            </span>
+          </div>
         </div>
-
       </div>
     </div>
 
@@ -299,11 +229,11 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import {
   ref,
   computed,
   onMounted,
+  nextTick,
 } from "vue";
 
 definePageMeta({
@@ -311,37 +241,27 @@ definePageMeta({
 });
 
 /* =========================
-   AXIOS
+   API
 ========================= */
-const api = axios.create({
-  baseURL:
-    "http://127.0.0.1:8000/api",
-});
+const { apiFetch } = useApi();
 
 /* =========================
    STATE
 ========================= */
 const bookings = ref([]);
+const loading = ref(false);
 
 const selectedCabin = ref("");
+const selectedMonth = ref(new Date().getMonth());
 
-const selectedMonth = ref(
-  new Date().getMonth()
-);
-
-const currentYear =
-  new Date().getFullYear();
-
-const todayStr = formatDate(
-  new Date()
-);
+const currentYear = new Date().getFullYear();
+const todayStr = formatDate(new Date());
 
 const showModal = ref(false);
+const modalBackdrop = ref(null);
 
 const modalCabin = ref("");
-
 const modalDate = ref("");
-
 const modalSchedules = ref([]);
 
 const weekDays = [
@@ -378,25 +298,25 @@ const months = [
 /* =========================
    FETCH
 ========================= */
-const fetchBookings =
-  async () => {
-    try {
-      const { data } =
-        await api.get(
-          "/bookings",
-          {
-            params: {
-              per_page: 1000,
-            },
-          }
-        );
+const fetchBookings = async () => {
+  loading.value = true;
 
-      bookings.value =
-        data.data || [];
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    const data = await apiFetch("/bookings", {
+      method: "GET",
+      params: {
+        per_page: 1000,
+      },
+    });
+
+    bookings.value = data?.data || [];
+  } catch (err) {
+    console.error("Failed to fetch bookings:", err);
+    bookings.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
 
 onMounted(fetchBookings);
 
@@ -404,16 +324,9 @@ onMounted(fetchBookings);
    HELPERS
 ========================= */
 function formatDate(d) {
-  const year =
-    d.getFullYear();
-
-  const month = String(
-    d.getMonth() + 1
-  ).padStart(2, "0");
-
-  const day = String(
-    d.getDate()
-  ).padStart(2, "0");
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
@@ -427,162 +340,103 @@ function parseDate(dt) {
 /* =========================
    CABINS
 ========================= */
-const uniqueCabins =
-  computed(() => [
-    ...new Set(
-      bookings.value.map(
-        (b) => b.cabin
-      )
-    ),
-  ]);
+const uniqueCabins = computed(() => [
+  ...new Set(
+    bookings.value
+      .map((b) => b.cabin)
+      .filter(Boolean)
+  ),
+]);
 
-const filteredCabins =
-  computed(() =>
-    selectedCabin.value
-      ? uniqueCabins.value.filter(
-          (c) =>
-            c ===
-            selectedCabin.value
-        )
-      : uniqueCabins.value
-  );
+const filteredCabins = computed(() =>
+  selectedCabin.value
+    ? uniqueCabins.value.filter((c) => c === selectedCabin.value)
+    : uniqueCabins.value
+);
 
 /* =========================
    MONTH
 ========================= */
-const currentMonth =
-  computed(
-    () =>
-      new Date(
-        currentYear,
-        selectedMonth.value,
-        1
-      )
-  );
-
-const monthLabel =
-  computed(() =>
-    currentMonth.value.toLocaleDateString(
-      "en-US",
-      {
-        month: "long",
-        year: "numeric",
-      }
+const currentMonth = computed(
+  () =>
+    new Date(
+      currentYear,
+      selectedMonth.value,
+      1
     )
-  );
+);
+
+const monthLabel = computed(() =>
+  currentMonth.value.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  })
+);
 
 /* =========================
    CALENDAR
 ========================= */
-const calendarDates =
-  computed(() => {
-    const dates = [];
+const calendarDates = computed(() => {
+  const dates = [];
 
-    const year =
-      currentMonth.value.getFullYear();
+  const year = currentMonth.value.getFullYear();
+  const month = currentMonth.value.getMonth();
 
-    const month =
-      currentMonth.value.getMonth();
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
 
-    const first = new Date(
-      year,
-      month,
-      1
-    );
+  Array.from({
+    length: first.getDay(),
+  }).forEach(() =>
+    dates.push({
+      currentMonth: false,
+    })
+  );
 
-    const last = new Date(
-      year,
-      month + 1,
-      0
-    );
+  Array.from({
+    length: last.getDate(),
+  }).forEach((_, i) => {
+    const d = new Date(year, month, i + 1);
 
-    Array.from({
-      length: first.getDay(),
-    }).forEach(() =>
-      dates.push({
-        currentMonth: false,
-      })
-    );
-
-    Array.from({
-      length: last.getDate(),
-    }).forEach((_, i) => {
-      const d = new Date(
-        year,
-        month,
-        i + 1
-      );
-
-      dates.push({
-        currentMonth: true,
-        number: i + 1,
-        full: formatDate(d),
-      });
+    dates.push({
+      currentMonth: true,
+      number: i + 1,
+      full: formatDate(d),
     });
-
-    return dates;
   });
+
+  return dates;
+});
 
 /* =========================
    OVERLAP
 ========================= */
-function hasConflict(
-  cabin,
-  start,
-  end
-) {
-  return bookings.value.some(
-    (b) => {
-      if (
-        b.cabin !== cabin
-      )
-        return false;
+function hasConflict(cabin, start, end) {
+  return bookings.value.some((b) => {
+    if (b.cabin !== cabin) return false;
+    if (b.status === "cancelled") return false;
 
-      if (
-        b.status ===
-        "cancelled"
-      )
-        return false;
+    const bookingStart = parseDate(b.start_datetime);
+    const bookingEnd = parseDate(b.end_datetime);
 
-      const bookingStart =
-        parseDate(
-          b.start_datetime
-        );
+    if (!bookingStart || !bookingEnd) return false;
 
-      const bookingEnd =
-        parseDate(
-          b.end_datetime
-        );
-
-      return (
-        bookingStart <= end &&
-        bookingEnd >= start
-      );
-    }
-  );
+    return bookingStart <= end && bookingEnd >= start;
+  });
 }
 
 /* =========================
    SCHEDULES
 ========================= */
-function getSchedules(
-  cabin,
-  date
-) {
-  const base =
-    new Date(date);
+function getSchedules(cabin, date) {
+  const base = new Date(date);
+  const next = new Date(date);
 
-  const next =
-    new Date(date);
-
-  next.setDate(
-    next.getDate() + 1
-  );
+  next.setDate(next.getDate() + 1);
 
   const schedules = [
     {
       label: "9AM - 5PM",
-
       start: new Date(
         base.getFullYear(),
         base.getMonth(),
@@ -590,7 +444,6 @@ function getSchedules(
         9,
         0
       ),
-
       end: new Date(
         base.getFullYear(),
         base.getMonth(),
@@ -598,13 +451,10 @@ function getSchedules(
         17,
         0
       ),
-
       type: "day",
     },
-
     {
       label: "7PM - 7AM",
-
       start: new Date(
         base.getFullYear(),
         base.getMonth(),
@@ -612,7 +462,6 @@ function getSchedules(
         19,
         0
       ),
-
       end: new Date(
         next.getFullYear(),
         next.getMonth(),
@@ -620,13 +469,10 @@ function getSchedules(
         7,
         0
       ),
-
       type: "night",
     },
-
     {
       label: "9AM - 7AM",
-
       start: new Date(
         base.getFullYear(),
         base.getMonth(),
@@ -634,7 +480,6 @@ function getSchedules(
         9,
         0
       ),
-
       end: new Date(
         next.getFullYear(),
         next.getMonth(),
@@ -642,13 +487,10 @@ function getSchedules(
         7,
         0
       ),
-
       type: "whole",
     },
-
     {
       label: "7PM - 5PM",
-
       start: new Date(
         base.getFullYear(),
         base.getMonth(),
@@ -656,7 +498,6 @@ function getSchedules(
         19,
         0
       ),
-
       end: new Date(
         next.getFullYear(),
         next.getMonth(),
@@ -664,65 +505,26 @@ function getSchedules(
         17,
         0
       ),
-
       type: "whole",
     },
   ];
 
-  return schedules.map(
-    (s) => ({
-      ...s,
-      occupied:
-        hasConflict(
-          cabin,
-          s.start,
-          s.end
-        ),
-    })
-  );
+  return schedules.map((s) => ({
+    ...s,
+    occupied: hasConflict(cabin, s.start, s.end),
+  }));
 }
 
 /* =========================
    DATE STATUS
 ========================= */
-function getDateStatus(
-  cabin,
-  date
-) {
-  const schedules =
-    getSchedules(
-      cabin,
-      date
-    );
+function getDateStatus(cabin, date) {
+  const schedules = getSchedules(cabin, date);
 
-  const allOccupied =
-    schedules.every(
-      (s) => s.occupied
-    );
-
-  const hasWhole =
-    schedules.some(
-      (s) =>
-        s.type ===
-          "whole" &&
-        s.occupied
-    );
-
-  const hasNight =
-    schedules.some(
-      (s) =>
-        s.type ===
-          "night" &&
-        s.occupied
-    );
-
-  const hasDay =
-    schedules.some(
-      (s) =>
-        s.type ===
-          "day" &&
-        s.occupied
-    );
+  const allOccupied = schedules.every((s) => s.occupied);
+  const hasWhole = schedules.some((s) => s.type === "whole" && s.occupied);
+  const hasNight = schedules.some((s) => s.type === "night" && s.occupied);
+  const hasDay = schedules.some((s) => s.type === "day" && s.occupied);
 
   return {
     allOccupied,
@@ -735,101 +537,65 @@ function getDateStatus(
 /* =========================
    DATE CLASS
 ========================= */
-function getDateClass(
-  cabin,
-  date
-) {
-  if (
-    !date.currentMonth
-  ) {
+function getDateClass(cabin, date) {
+  if (!date.currentMonth) {
     return "empty";
   }
 
-  const status =
-    getDateStatus(
-      cabin,
-      date.full
-    );
+  const status = getDateStatus(cabin, date.full);
 
-  if (
-    status.allOccupied
-  ) {
+  if (status.allOccupied) {
     return {
       whole: true,
-      today:
-        date.full ===
-        todayStr,
+      today: date.full === todayStr,
     };
   }
 
-  if (
-    status.hasWhole ||
-    status.hasNight
-  ) {
+  if (status.hasWhole || status.hasNight) {
     return {
       night: true,
-      today:
-        date.full ===
-        todayStr,
+      today: date.full === todayStr,
     };
   }
 
   if (status.hasDay) {
     return {
       day: true,
-      today:
-        date.full ===
-        todayStr,
+      today: date.full === todayStr,
     };
   }
 
   return {
     available: true,
-    today:
-      date.full ===
-      todayStr,
+    today: date.full === todayStr,
   };
 }
 
 /* =========================
    MODAL
 ========================= */
-function openSchedules(
-  cabin,
-  date
-) {
-  if (
-    !date.currentMonth
-  )
-    return;
+function openSchedules(cabin, date) {
+  if (!date.currentMonth) return;
 
-  modalCabin.value =
-    cabin;
+  modalCabin.value = cabin;
+  modalDate.value = date.full;
+  modalSchedules.value = getSchedules(cabin, date.full);
+  showModal.value = true;
 
-  modalDate.value =
-    date.full;
+  nextTick(() => {
+    modalBackdrop.value?.focus();
+  });
+}
 
-  modalSchedules.value =
-    getSchedules(
-      cabin,
-      date.full
-    );
-
-  showModal.value =
-    true;
+function closeModal() {
+  showModal.value = false;
 }
 
 /* =========================
    TODAY
 ========================= */
-function isOccupiedToday(
-  cabin
-) {
-  const status =
-    getDateStatus(
-      cabin,
-      todayStr
-    );
+function isOccupiedToday(cabin) {
+  const status = getDateStatus(cabin, todayStr);
 
   return (
     status.allOccupied ||
@@ -842,73 +608,36 @@ function isOccupiedToday(
 /* =========================
    SUMMARY
 ========================= */
-const occupiedToday =
-  computed(
-    () =>
-      uniqueCabins.value.filter(
-        (c) =>
-          isOccupiedToday(
-            c
-          )
-      ).length
-  );
+const occupiedToday = computed(
+  () =>
+    uniqueCabins.value.filter((c) => isOccupiedToday(c)).length
+);
 
-const summaryCards =
-  computed(() => [
-    {
-      label:
-        "Total Cabins",
-
-      value:
-        uniqueCabins.value
-          .length,
-
-      class:
-        "text-dark",
-    },
-
-    {
-      label:
-        "Available Today",
-
-      value:
-        uniqueCabins.value
-          .length -
-        occupiedToday.value,
-
-      class:
-        "text-success",
-    },
-
-    {
-      label:
-        "Occupied Today",
-
-      value:
-        occupiedToday.value,
-
-      class:
-        "text-danger",
-    },
-
-    {
-      label:
-        "Total Bookings",
-
-      value:
-        bookings.value
-          .length,
-
-      class:
-        "text-primary",
-    },
-  ]);
+const summaryCards = computed(() => [
+  {
+    label: "Total Cabins",
+    value: uniqueCabins.value.length,
+    class: "text-dark",
+  },
+  {
+    label: "Available Today",
+    value: uniqueCabins.value.length - occupiedToday.value,
+    class: "text-success",
+  },
+  {
+    label: "Occupied Today",
+    value: occupiedToday.value,
+    class: "text-danger",
+  },
+  {
+    label: "Total Bookings",
+    value: bookings.value.length,
+    class: "text-primary",
+  },
+]);
 </script>
 
 <style scoped>
-/* =========================
-   LEGEND
-========================= */
 .legend-dot {
   width: 12px;
   height: 12px;
@@ -932,9 +661,6 @@ const summaryCards =
   background: #dc2626;
 }
 
-/* =========================
-   CALENDAR
-========================= */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -950,25 +676,16 @@ const summaryCards =
   text-transform: uppercase;
 }
 
-/* =========================
-   DATE CELL
-========================= */
 .calendar-day {
   height: 58px;
-
   border-radius: 18px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 14px;
   font-weight: 700;
-
   transition: .2s ease;
-
   border: 1px solid #e2e8f0;
-
   cursor: pointer;
 }
 
@@ -976,101 +693,95 @@ const summaryCards =
   transform: translateY(-1px);
 }
 
-/* EMPTY */
 .calendar-day.empty {
   background: transparent;
   border: none;
   cursor: default;
 }
 
-/* AVAILABLE */
 .calendar-day.available {
   background: #fff;
   color: #334155;
 }
 
-/* DAY */
 .calendar-day.day {
   background: #dbeafe;
   color: #1d4ed8;
   border-color: #bfdbfe;
 }
 
-/* NIGHT */
 .calendar-day.night {
   background: #fde6d8;
   color: #9d3f0e;
   border-color: #f5c3a3;
 }
 
-/* WHOLE */
 .calendar-day.whole {
   background: #dc2626;
   color: white;
   border-color: #dc2626;
 }
 
-/* TODAY */
 .calendar-day.today {
   outline: 2px solid #f59e0b;
   outline-offset: 2px;
 }
 
-/* =========================
-   MODAL BACKDROP
-========================= */
 .schedule-modal-backdrop {
   position: fixed;
   inset: 0;
-
   background: rgba(0,0,0,.45);
-
   z-index: 9999;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 20px;
+  outline: none;
 }
 
-/* =========================
-   MODAL
-========================= */
 .schedule-modal {
+  position: relative;
   width: 100%;
   max-width: 780px;
-
   background: #fff;
-
   border-radius: 24px;
-
   padding: 26px;
-
-  box-shadow:
-    0 10px 40px rgba(0,0,0,.12);
-
+  box-shadow: 0 10px 40px rgba(0,0,0,.12);
   animation: modalIn .2s ease;
 }
 
-/* =========================
-   ITEM
-========================= */
+.modal-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .2s ease;
+  z-index: 2;
+}
+
+.modal-close-btn:hover {
+  background: #e2e8f0;
+  color: #dc2626;
+  transform: rotate(90deg);
+}
+
 .schedule-item {
   border: 1px solid #e2e8f0;
-
   border-radius: 18px;
-
   padding: 16px 18px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 16px;
-
   min-height: 88px;
-
   transition: .2s ease;
 }
 
@@ -1079,25 +790,16 @@ const summaryCards =
   transform: translateY(-1px);
 }
 
-/* =========================
-   TITLE
-========================= */
 .schedule-item h5 {
   font-size: 17px;
   margin-bottom: 0 !important;
 }
 
-/* =========================
-   TEXT
-========================= */
 .schedule-item small {
   font-size: 12px;
   line-height: 1.25;
 }
 
-/* =========================
-   BADGES
-========================= */
 .schedule-item .badge {
   font-size: 11px;
   font-weight: 600;
@@ -1107,17 +809,11 @@ const summaryCards =
   background: #7c3aed;
 }
 
-/* =========================
-   CARD
-========================= */
 .card {
   overflow: hidden;
   border: 1px solid #e2e8f0 !important;
 }
 
-/* =========================
-   ANIMATION
-========================= */
 @keyframes modalIn {
   from {
     opacity: 0;
@@ -1130,11 +826,7 @@ const summaryCards =
   }
 }
 
-/* =========================
-   MOBILE
-========================= */
 @media (max-width: 768px) {
-
   .calendar-grid {
     gap: 6px;
   }
@@ -1150,6 +842,13 @@ const summaryCards =
     border-radius: 20px;
   }
 
+  .modal-close-btn {
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+  }
+
   .schedule-item {
     padding: 14px;
     min-height: auto;
@@ -1158,6 +857,5 @@ const summaryCards =
   .schedule-item h5 {
     font-size: 15px;
   }
-
 }
 </style>

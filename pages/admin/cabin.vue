@@ -1,5 +1,7 @@
 <template>
-  <span><h4 class="mb-3 fw-bold">Cabin</h4></span>
+  <span>
+    <h4 class="mb-3 fw-bold">Cabin</h4>
+  </span>
 
   <div class="container-fluid py-4 px-4">
     <div class="row">
@@ -45,14 +47,16 @@
                 <td>{{ room.max_pax }}</td>
 
                 <td>
-                  <span class="badge" :class="room.available ? 'bg-success' : 'bg-secondary'">
+                  <span
+                    class="badge"
+                    :class="room.available ? 'bg-success' : 'bg-secondary'"
+                  >
                     {{ room.available ? 'Available' : 'Maintenance' }}
                   </span>
                 </td>
 
                 <td>
                   <div class="d-flex gap-2">
-
                     <button
                       class="btn btn-sm btn-warning d-flex align-items-center gap-1 px-3"
                       @click="editRoom(room)"
@@ -68,7 +72,6 @@
                       <Icon name="mdi:delete" />
                       Delete
                     </button>
-
                   </div>
                 </td>
               </tr>
@@ -92,14 +95,38 @@
             {{ isEdit ? "Edit Room" : "Add Room" }}
           </h5>
 
-          <input v-model="form.name" class="form-control mb-2" placeholder="Name" />
-          <input v-model="form.price" type="number" class="form-control mb-2" placeholder="Price" />
-          <input v-model="form.max_pax" type="number" class="form-control mb-2" placeholder="Max Pax" />
+          <input
+            v-model="form.name"
+            class="form-control mb-2"
+            placeholder="Name"
+          />
 
-          <input type="file" class="form-control mb-2" @change="handleImageUpload" />
+          <input
+            v-model="form.price"
+            type="number"
+            class="form-control mb-2"
+            placeholder="Price"
+          />
+
+          <input
+            v-model="form.max_pax"
+            type="number"
+            class="form-control mb-2"
+            placeholder="Max Pax"
+          />
+
+          <input
+            type="file"
+            class="form-control mb-2"
+            accept="image/*"
+            @change="handleImageUpload"
+          />
 
           <div v-if="form.image" class="mb-2">
-            <img :src="form.image" style="width:100%;height:120px;object-fit:cover" />
+            <img
+              :src="form.image"
+              style="width:100%;height:120px;object-fit:cover;border-radius:8px"
+            />
           </div>
 
           <button
@@ -113,6 +140,7 @@
           <button
             v-if="isEdit"
             class="btn btn-secondary w-100 mt-2"
+            :disabled="loading"
             @click="resetForm"
           >
             Cancel
@@ -129,10 +157,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({
+  layout: 'admin'
+})
 
-const { $api } = useNuxtApp()
-const toast = useToast() // ✅ CORRECT WAY
+const { apiFetch } = useApi()
+const toast = useToast()
 
 /* STATE */
 const rooms = ref([])
@@ -153,8 +183,11 @@ const form = ref({
 /* FETCH */
 const fetchRooms = async () => {
   try {
-    const res = await $api('/rooms')
-    rooms.value = res.data || res
+    const res = await apiFetch('/rooms', {
+      method: 'GET'
+    })
+
+    rooms.value = res?.data || res || []
   } catch (err) {
     handleError(err)
   }
@@ -166,6 +199,8 @@ onMounted(fetchRooms)
 const getImage = (img) => {
   if (!img) return 'https://via.placeholder.com/70'
   if (img.startsWith('blob')) return img
+  if (img.startsWith('http')) return img
+
   return `http://127.0.0.1:8000/storage/${img}`
 }
 
@@ -179,8 +214,10 @@ const handleImageUpload = (e) => {
 
 /* FILTER */
 const filteredRooms = computed(() =>
-  rooms.value.filter(r =>
-    r.name.toLowerCase().includes(search.value.toLowerCase())
+  rooms.value.filter((r) =>
+    String(r.name || '')
+      .toLowerCase()
+      .includes(search.value.toLowerCase())
   )
 )
 
@@ -194,8 +231,6 @@ const saveRoom = async () => {
     formData.append('name', form.value.name)
     formData.append('price', form.value.price)
     formData.append('max_pax', form.value.max_pax)
-
-    // ✅ FIX BOOLEAN
     formData.append('available', form.value.available ? 1 : 0)
 
     if (form.value.file) {
@@ -205,16 +240,22 @@ const saveRoom = async () => {
     if (isEdit.value) {
       formData.append('_method', 'PUT')
 
-      await $api(`/rooms/${form.value.id}`, {
+      await apiFetch(`/rooms/${form.value.id}`, {
         method: 'POST',
-        body: formData
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
 
       toast.success('Room updated successfully ✅')
     } else {
-      await $api('/rooms', {
+      await apiFetch('/rooms', {
         method: 'POST',
-        body: formData
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
 
       toast.success('Room created successfully ✅')
@@ -222,21 +263,25 @@ const saveRoom = async () => {
 
     await fetchRooms()
     resetForm()
-
   } catch (err) {
     handleError(err)
+  } finally {
+    loading.value = false
   }
-
-  loading.value = false
 }
 
 /* EDIT */
 const editRoom = (room) => {
   isEdit.value = true
+
   form.value = {
-    ...room,
+    id: room.id,
+    name: room.name || '',
+    price: room.price || '',
+    max_pax: room.max_pax || '',
+    file: null,
     image: getImage(room.image),
-    file: null
+    available: Boolean(room.available)
   }
 }
 
@@ -245,11 +290,12 @@ const deleteRoom = async (id) => {
   if (!confirm('Are you sure?')) return
 
   try {
-    await $api(`/rooms/${id}`, { method: 'DELETE' })
+    await apiFetch(`/rooms/${id}`, {
+      method: 'DELETE'
+    })
 
     toast.success('Room deleted 🗑️')
-    fetchRooms()
-
+    await fetchRooms()
   } catch (err) {
     handleError(err)
   }
@@ -258,6 +304,7 @@ const deleteRoom = async (id) => {
 /* RESET */
 const resetForm = () => {
   isEdit.value = false
+
   form.value = {
     id: null,
     name: '',
@@ -273,14 +320,16 @@ const resetForm = () => {
 const handleError = (err) => {
   console.error('🔥 BACKEND ERROR:', err)
 
-  if (err?.data?.message) {
-    toast.error(err.data.message)
+  const data = err?.response?.data || err?.data
+
+  if (data?.message) {
+    toast.error(data.message)
     return
   }
 
-  if (err?.data?.errors) {
-    Object.values(err.data.errors).forEach(errors => {
-      errors.forEach(msg => toast.error(msg))
+  if (data?.errors) {
+    Object.values(data.errors).forEach((errors) => {
+      errors.forEach((msg) => toast.error(msg))
     })
     return
   }
